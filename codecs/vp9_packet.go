@@ -345,6 +345,9 @@ func (p *VP9Packet) parseSSData(packet []byte, pos int) (int, error) {
 	p.NG = 0
 
 	if p.Y {
+		if len(packet) < pos+int(NS)*4 {
+			return pos, errShortPacket
+		}
 		p.Width = make([]uint16, NS)
 		p.Height = make([]uint16, NS)
 		for i := 0; i < int(NS); i++ {
@@ -356,16 +359,25 @@ func (p *VP9Packet) parseSSData(packet []byte, pos int) (int, error) {
 	}
 
 	if p.G {
+		if len(packet) <= pos {
+			return pos, errShortPacket
+		}
 		p.NG = packet[pos]
 		pos++
 	}
 
 	for i := 0; i < int(p.NG); i++ {
+		if len(packet) <= pos {
+			return pos, errShortPacket
+		}
 		p.PGTID = append(p.PGTID, packet[pos]>>5)
 		p.PGU = append(p.PGU, packet[pos]&0x10 != 0)
 		R := (packet[pos] >> 2) & 0x3
 		pos++
 
+		if len(packet) < pos+int(R) {
+			return pos, errShortPacket
+		}
 		p.PGPDiff = append(p.PGPDiff, []uint8{})
 		for j := 0; j < int(R); j++ {
 			p.PGPDiff[i] = append(p.PGPDiff[i], packet[pos])

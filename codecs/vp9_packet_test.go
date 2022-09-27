@@ -167,6 +167,30 @@ func TestVP9Packet_Unmarshal(t *testing.T) {
 				Payload: []byte{},
 			},
 		},
+		"ScalabilityStructure_ShortPacket0": {
+			b:   []byte{0x0A, 0x10},
+			err: errShortPacket,
+		},
+		"ScalabilityStructure_ShortPacket1": {
+			b:   []byte{0x0A, 0x10, 0x0, 0x10, 0x10},
+			err: errShortPacket,
+		},
+		"ScalabilityStructure_ShortPacket2": {
+			b:   []byte{0x0A, 0x08},
+			err: errShortPacket,
+		},
+		"ScalabilityStructure_ShortPacket3": {
+			b:   []byte{0x0A, 0x08, 0x01},
+			err: errShortPacket,
+		},
+		"ScalabilityStructure_ShortPacket4": {
+			b:   []byte{0x0A, 0x08, 0x01, 0x04},
+			err: errShortPacket,
+		},
+		"ScalabilityStructure_ShortPacket5": {
+			b:   []byte{0x0A, 0x08, 0x01, 0x08, 0x01},
+			err: errShortPacket,
+		},
 	}
 	for name, c := range cases {
 		c := c
